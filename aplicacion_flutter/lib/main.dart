@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
         '/perfil': (context) => const PerfilScreen(),
         '/chats': (context) => const ChatScreen(),
         '/subir_producto': (context) => SubirProductoStateless(
-          productos: [],
+          productos: const [],
           onProductoSubido: (nuevoProducto) {
             // Manejo de producto subido (si es necesario)
           },

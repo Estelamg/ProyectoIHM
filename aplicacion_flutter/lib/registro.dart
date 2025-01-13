@@ -12,6 +12,9 @@ class _RegistroState extends State<Registro> {
   final TextEditingController usuarioController = TextEditingController();
   final TextEditingController contrasenaController = TextEditingController();
   final TextEditingController verificarContrasenaController = TextEditingController();
+  final TextEditingController nombreController = TextEditingController();
+  final TextEditingController apellidosController = TextEditingController();
+  final TextEditingController correoController = TextEditingController();  
 
   void registrarUsuario() {
     // Verificar que las contraseñas coincidan
@@ -26,6 +29,9 @@ class _RegistroState extends State<Registro> {
     DataStore.usuarios.add({
       'usuario': usuarioController.text,
       'contrasena': contrasenaController.text,
+      'nombre': nombreController.text, 
+      'apellidos': apellidosController.text, 
+      'correo': correoController.text,
     });
 
     ScaffoldMessenger.of(context).showSnackBar(
@@ -59,6 +65,30 @@ class _RegistroState extends State<Registro> {
                   const Text(
                     'REGISTRO',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: nombreController,
+                    decoration: const InputDecoration(
+                      labelText: 'Nombre',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                   const SizedBox(height: 16),
+                  TextField(
+                    controller: apellidosController,
+                    decoration: const InputDecoration(
+                      labelText: 'Apellidos',
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: correoController,
+                    decoration: const InputDecoration(
+                      labelText: 'Correo electrónico',
+                      border: OutlineInputBorder(),
+                    ),
                   ),
                   const SizedBox(height: 16),
                   TextField(
