@@ -1,53 +1,68 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
-class SubirProductoStateless extends StatelessWidget {
-  final List<Map<String, String>> productos;
-  final Function(Map<String, String>) onProductoSubido;
+class SubirProducto extends StatefulWidget {
+  final Function(Map<String, dynamic>) onProductoSubido;
 
-  const SubirProductoStateless({
-    super.key,
-    required this.productos,
+  const SubirProducto({
+    Key? key,
     required this.onProductoSubido,
-  });
+  }) : super(key: key);
+
+  @override
+  _SubirProductoState createState() => _SubirProductoState();
+}
+
+class _SubirProductoState extends State<SubirProducto> {
+  final TextEditingController nombreController = TextEditingController();
+  final TextEditingController descripcionController = TextEditingController();
+  final TextEditingController precioController = TextEditingController();
+  File? imagenSeleccionada;
+  String? monedaSeleccionada;
+
+  final List<String> monedas = ['USD', 'EUR', 'MXN'];
+
+  Future<void> seleccionarImagen() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? imagen = await picker.pickImage(source: ImageSource.gallery);
+
+    if (imagen != null) {
+      setState(() {
+        imagenSeleccionada = File(imagen.path);
+      });
+    }
+  }
+
+  void publicarProducto() {
+    if (nombreController.text.isEmpty ||
+        descripcionController.text.isEmpty ||
+        precioController.text.isEmpty ||
+        imagenSeleccionada == null ||
+        monedaSeleccionada == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Por favor, completa todos los campos.')),
+      );
+      return;
+    }
+
+    final nuevoProducto = {
+      'usuario': 'usuarioActual',
+      'nombreProducto': nombreController.text,
+      'descripcion': descripcionController.text,
+      'precio': '${precioController.text} ${monedaSeleccionada!}',
+      'imagen': imagenSeleccionada!.path,
+    };
+
+    widget.onProductoSubido(nuevoProducto);
+    Navigator.pop(context);
+  }
 
   @override
   Widget build(BuildContext context) {
-    final TextEditingController nombreController = TextEditingController();
-    final TextEditingController descripcionController = TextEditingController();
-    final TextEditingController precioController = TextEditingController();
-    String? monedaSeleccionada;
-
-    void publicarProducto() {
-      if (nombreController.text.isEmpty ||
-          descripcionController.text.isEmpty ||
-          precioController.text.isEmpty ||
-          monedaSeleccionada == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Por favor, completa todos los campos.')),
-        );
-        return;
-      }
-
-      final nuevoProducto = {
-        'usuario': 'usuarioActual', // Sustituye con el usuario real si aplica.
-        'nombreProducto': nombreController.text,
-        'descripcion': descripcionController.text,
-        'precio': '${precioController.text} $monedaSeleccionada',
-      };
-
-      onProductoSubido(nuevoProducto);
-      Navigator.pop(context);
-    }
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Subir Producto'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -56,17 +71,23 @@ class SubirProductoStateless extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               GestureDetector(
-                onTap: () {
-                  // Aquí podrías abrir el selector de imágenes
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Función de imagen no implementada')),
-                  );
-                },
+                onTap: seleccionarImagen,
                 child: Container(
                   height: 150,
                   width: double.infinity,
-                  color: Colors.grey[300],
-                  child: const Icon(Icons.camera_alt, size: 50),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    border: Border.all(color: Colors.grey),
+                    image: imagenSeleccionada != null
+                        ? DecorationImage(
+                            image: FileImage(imagenSeleccionada!),
+                            fit: BoxFit.cover,
+                          )
+                        : null,
+                  ),
+                  child: imagenSeleccionada == null
+                      ? const Icon(Icons.camera_alt, size: 50)
+                      : null,
                 ),
               ),
               const SizedBox(height: 16),
@@ -87,38 +108,32 @@ class SubirProductoStateless extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: precioController,
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
-                        labelText: 'Precio',
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: DropdownButtonFormField<String>(
-                      value: monedaSeleccionada,
-                      items: ['EUR', 'USD', 'MXN']
-                          .map((moneda) => DropdownMenuItem(
-                                value: moneda,
-                                child: Text(moneda),
-                              ))
-                          .toList(),
-                      onChanged: (value) {
-                        monedaSeleccionada = value;
-                      },
-                      decoration: const InputDecoration(
-                        labelText: 'Moneda',
-                        border: OutlineInputBorder(),
-                      ),
-                    ),
-                  ),
-                ],
+              TextField(
+                controller: precioController,
+                keyboardType: TextInputType.number,
+                decoration: const InputDecoration(
+                  labelText: 'Precio',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 16),
+              DropdownButtonFormField<String>(
+                value: monedaSeleccionada,
+                items: monedas.map((String moneda) {
+                  return DropdownMenuItem<String>(
+                    value: moneda,
+                    child: Text(moneda),
+                  );
+                }).toList(),
+                onChanged: (String? nuevaMoneda) {
+                  setState(() {
+                    monedaSeleccionada = nuevaMoneda;
+                  });
+                },
+                decoration: const InputDecoration(
+                  labelText: 'Moneda',
+                  border: OutlineInputBorder(),
+                ),
               ),
               const SizedBox(height: 16),
               ElevatedButton(
