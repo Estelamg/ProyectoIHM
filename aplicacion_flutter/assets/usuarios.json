@@ -1,0 +1,17 @@
+[
+    {
+      "usuario": "irene",
+      "contrasena": "irene",
+      "nombre": "Irene",
+      "apellidos": "Perez",
+      "correo": "irene@example.com"
+    },
+    {
+      "usuario": "ana456",
+      "contrasena": "securepass",
+      "nombre": "Ana",
+      "apellidos": "Lopez",
+      "correo": "ana@example.com"
+    }
+  ]
+  
