@@ -8,8 +8,8 @@ class ChatScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<Map<String, String>> chats = [
       {'usuario': 'usuario1', 'mensaje': 'Hola!', 'hora': '14:20'},
-      {'usuario': 'usuario2', 'mensaje': '¿Cómo estás?', 'hora': '10:15'},
-      {'usuario': 'usuario3', 'mensaje': 'Buen día!', 'hora': '18:30'},
+      {'usuario': 'usuario2', 'mensaje': 'Te interesa el producto?', 'hora': '10:15'},
+      {'usuario': 'usuario3', 'mensaje': 'H', 'hora': '18:30'},
       {'usuario': 'usuario4', 'mensaje': '¿Qué tal?', 'hora': '09:42'},
       {'usuario': 'usuario5', 'mensaje': 'Nos vemos mañana.', 'hora': '01:12'},
     ];
