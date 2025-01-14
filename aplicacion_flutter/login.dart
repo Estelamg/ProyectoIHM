@@ -5,16 +5,16 @@ class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<LoginScreen> createState() => LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class LoginScreenState extends State<LoginScreen> {
   final TextEditingController _usuarioController = TextEditingController();
   final TextEditingController _contrasenaController = TextEditingController();
 
-  void _iniciarSesion() {
-    final usuario = _usuarioController.text;
-    final contrasena = _contrasenaController.text;
+  Future<void> _iniciarSesion() async {
+    final usuario = _usuarioController.text.trim();
+    final contrasena = _contrasenaController.text.trim();
 
     if (usuario.isEmpty || contrasena.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -23,12 +23,18 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
+    // Verificar las credenciales en DataStore
     final usuarioRegistrado = DataStore.usuarios.firstWhere(
       (u) => u['usuario'] == usuario && u['contrasena'] == contrasena,
       orElse: () => {},
     );
 
     if (usuarioRegistrado.isNotEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Bienvenido, ${usuarioRegistrado['nombre']}')),
+      );
+
+      // Redirigir a la página principal
       Navigator.pushReplacementNamed(context, '/pagina_principal');
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
