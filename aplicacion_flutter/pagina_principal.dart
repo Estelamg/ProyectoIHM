@@ -7,11 +7,13 @@ import 'chat_screen.dart';
 
 class PaginaPrincipal extends StatefulWidget {
   final Function(Map<String, dynamic>) onProductoComprado; // Callback para gestionar productos comprados
+  final List<Map<String, dynamic>> favoritos; // Lista de favoritos
   final Function(Map<String, dynamic>) onAgregarFavoritos; // Callback para gestionar productos favoritos
 
   const PaginaPrincipal({
     super.key,
     required this.onProductoComprado,
+    required this.favoritos,
     required this.onAgregarFavoritos,
   });
 
@@ -27,7 +29,30 @@ class _PaginaPrincipalState extends State<PaginaPrincipal> {
   @override
   void initState() {
     super.initState();
-    productosFiltrados = List.from(productos); // Inicializa los productos filtrados
+    _cargarProductos(); // Método para cargar los productos al iniciar la página
+  }
+
+  Future<void> _cargarProductos() async {
+    // Simula la carga de productos desde un archivo o base de datos
+    setState(() {
+      productos = [
+        {
+          'nombreProducto': 'Producto 1',
+          'usuario': 'juan123',
+          'descripcion': 'Descripción 1',
+          'precio': '20€',
+          'imagen': null
+        },
+        {
+          'nombreProducto': 'Producto 2',
+          'usuario': 'ana456',
+          'descripcion': 'Descripción 2',
+          'precio': '15€',
+          'imagen': null
+        }
+      ];
+      productosFiltrados = List.from(productos);
+    });
   }
 
   void _onItemTapped(int index) {
@@ -46,7 +71,7 @@ class _PaginaPrincipalState extends State<PaginaPrincipal> {
         MaterialPageRoute(
           builder: (context) => PerfilScreen(
             productosComprados: productos, // Pasar productos comprados
-            productosFavoritos: [], // Añadir aquí una lista para los favoritos
+            productosFavoritos: widget.favoritos, // Pasar lista de favoritos
           ),
         ),
       );
@@ -59,8 +84,8 @@ class _PaginaPrincipalState extends State<PaginaPrincipal> {
         productosFiltrados = List.from(productos);
       } else {
         productosFiltrados = productos.where((producto) {
-          final nombre = producto['nombreProducto'].toLowerCase();
-          final descripcion = producto['descripcion'].toLowerCase();
+          final nombre = producto['nombreProducto']?.toLowerCase() ?? '';
+          final descripcion = producto['descripcion']?.toLowerCase() ?? '';
           final queryLower = query.toLowerCase();
           return nombre.contains(queryLower) || descripcion.contains(queryLower);
         }).toList();
@@ -109,7 +134,7 @@ class _PaginaPrincipalState extends State<PaginaPrincipal> {
                           color: Colors.grey[300],
                           child: const Icon(Icons.image),
                         ),
-                  title: Text(producto['nombreProducto']),
+                  title: Text(producto['nombreProducto'] ?? 'Sin nombre'),
                   subtitle: Text('@${producto['usuario']}'),
                   onTap: () {
                     Navigator.push(
