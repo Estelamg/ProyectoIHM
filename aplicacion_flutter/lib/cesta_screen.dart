@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'dart:io'; // Asegúrate de importar esta biblioteca para usar la clase File.
+import 'dart:io';
 
 class CestaScreen extends StatelessWidget {
   final List<Map<String, dynamic>> productosComprados;
